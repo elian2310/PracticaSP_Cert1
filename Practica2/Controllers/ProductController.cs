@@ -20,28 +20,35 @@ namespace Practica2.Controllers
             _productMgr = productManager;
         }
         [HttpGet]
-        [Route("/calculate-prices")]
+        
         public IActionResult GetProducts()
         {
             return Ok(_productMgr.GetProducts());
         }
         [HttpPost]
-        public IActionResult CreateProduct(string name, string type, int stock)
+        public IActionResult CreateProduct([FromBody]Practica2.Models.Product product)
         {
-            Product createdProduct = _productMgr.CreateProduct(name, type.ToUpper(), stock);
+            Product createdProduct = _productMgr.CreateProduct(product.Name, product.Type.ToUpper(), product.Stock);
             return Ok(createdProduct);
         }
         [HttpPut]
-        public IActionResult UpdateProduct(string codeToFind, string newName, int newStock)
+        public IActionResult UpdateProduct([FromHeader]string codeToFind,[FromBody]Practica2.Models.Product product)
         {
-            int res = _productMgr.UpdateProuct(newName, newStock, codeToFind);
+            int res = _productMgr.UpdateProuct(product.Name, product.Stock, codeToFind);
             return Ok(res);
         }
         [HttpDelete]
-        public IActionResult DeleteProduct(string codeToFind)
+        public IActionResult DeleteProduct([FromHeader] string codeToFind)
         {
             int res = _productMgr.DeleteProduct(codeToFind);
             return Ok(res);
+        }
+
+        [HttpGet]
+        [Route("/calculate-prices")]
+        public IActionResult CalculatePrices()
+        {
+            return Ok(_productMgr.CalculatePrices());
         }
     }
 }

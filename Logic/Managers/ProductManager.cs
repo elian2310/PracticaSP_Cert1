@@ -51,11 +51,7 @@ namespace Logic.Managers
                 {
                     prod.Code = $"{prod.Type}-{_products.IndexOf(prod)+deleted}";
                 }
-                while (prod.Price <= 0.0)
-                {
-                    recivednumber = _numberService.GetNumber().Result;
-                    prod.Price = recivednumber.digit;
-                }
+                
             }
             string path = _configuration.GetSection("DBroute").Value;
             if (!File.Exists(path))
@@ -72,7 +68,7 @@ namespace Logic.Managers
             {
                 throw new InvalidProductDataException("Invalid product name");
             }
-            if (!(type.Equals("SOCCER")) || !(type.Equals("BASKET")))
+            if (!isTypeValid(type))
             {
                 throw new InvalidProductDataException("Invalid product type");
             }
@@ -149,5 +145,39 @@ namespace Logic.Managers
             return res;
         }
         
+        public List<Product> CalculatePrices()
+        {
+            foreach(Product prod in _products)
+            {
+                while (prod.Price <= 0.0)
+                {
+                    recivednumber = _numberService.GetNumber().Result;
+                    prod.Price = recivednumber.digit;
+                }
+            }
+
+            string path = _configuration.GetSection("DBroute").Value;
+            if (!File.Exists(path))
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(path));
+            }
+            string json = JsonConvert.SerializeObject(_products);
+            System.IO.File.WriteAllText(path, json);
+            return _products;
+        }
+
+        private bool isTypeValid(string type)
+        {
+            bool res = false;
+            if(type.Equals("SOCCER"))
+            {
+                res = true;
+            }
+            if (type.Equals("BASKET"))
+            {
+                res = true;
+            }
+            return res;
+        }
     }
 }
