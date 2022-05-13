@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using Logic.Managers;
 using Services;
 using Practica2.Middlewares;
+using Serilog;
 
 namespace Practica2
 {
@@ -27,6 +28,18 @@ namespace Practica2
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
+
+            Log.Logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(Configuration)
+                .Enrich.FromLogContext()
+                .Enrich.WithMachineName()
+                .Enrich.WithEnvironmentName()
+                .CreateLogger();
+
+            Log.Information("Se ha configurado bin elo logs");
+            Log.Information("Se ha cargado satisfactoriamente el archivo de configuracion");
+
+            Log.Information("");
         }
 
         public IConfiguration Configuration { get; }

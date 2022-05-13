@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using Serilog;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -17,6 +18,7 @@ namespace Services
         {
             try
             {
+                Log.Information("Obtaining value from the backing service");
                 string addressURL = _configuration.GetSection("addressURL").Value;
                 HttpClient client = new HttpClient();
                 HttpResponseMessage reponse = await client.GetAsync(addressURL);
@@ -29,14 +31,14 @@ namespace Services
                 }
                 else
                 {
-                    string errorMessage = "El servidor de números tuvo problemas";
+                    string errorMessage = "The number server had problems";
                     throw new NumberServiceNotFoundException(errorMessage);
                 }
                 return number;
             }
             catch (Exception)
             {
-                string errorMessage = "El servidor de números paso por problemas inesperados";
+                string errorMessage = "The number server experienced unexpected problems";
                 throw new NumberServiceException(errorMessage);
             }
             

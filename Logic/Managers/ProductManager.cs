@@ -8,6 +8,7 @@ using System.Text.Json.Serialization;
 using Newtonsoft.Json;
 using System.IO;
 using Services;
+using Serilog;
 
 namespace Logic.Managers
 {
@@ -40,11 +41,13 @@ namespace Logic.Managers
                 
                 _products = JsonConvert.DeserializeObject<List<Product>>(dbjson);
             }
+            Log.Information("Products have been loaded");
             
         }
 
         public List<Product> GetProducts()
         {
+            Log.Information("Get products, started");
             foreach (Product prod in _products)
             {
                 if (prod.Code.Equals(""))
@@ -64,6 +67,7 @@ namespace Logic.Managers
         }
         public Product CreateProduct(string name, string type, int stock)
         {
+            Log.Information("Create product, started");
             if (string.IsNullOrWhiteSpace(name))
             {
                 throw new InvalidProductDataException("Invalid product name");
@@ -87,10 +91,12 @@ namespace Logic.Managers
             }
             string json = JsonConvert.SerializeObject(_products);
             System.IO.File.WriteAllText(path, json);
+            Log.Information("Create product, finished");
             return nprod;
         }
         public int UpdateProuct(string name, int stock, string code)
         {
+            Log.Information("Update product, started");
             int res = 0;
             int indProduct = _products.FindIndex(p => p.Code.Equals(code));
             if (indProduct < 0)
@@ -119,10 +125,12 @@ namespace Logic.Managers
             }
             string json = JsonConvert.SerializeObject(_products);
             System.IO.File.WriteAllText(path, json);
+            Log.Information("Update product, finished");
             return res;
         }
         public int DeleteProduct(string code)
         {
+            Log.Information("Delete product, started");
             int res = 0;
             int indProduct = _products.FindIndex(p => p.Code.Equals(code));
             if (indProduct < 0)
@@ -142,12 +150,14 @@ namespace Logic.Managers
             }
             string json = JsonConvert.SerializeObject(_products);
             System.IO.File.WriteAllText(path, json);
+            Log.Information("Delete product, finished");
             return res;
         }
         
         public List<Product> CalculatePrices()
         {
-            foreach(Product prod in _products)
+            Log.Information("Calculate prices of products, started");
+            foreach (Product prod in _products)
             {
                 while (prod.Price <= 0.0)
                 {
@@ -163,6 +173,7 @@ namespace Logic.Managers
             }
             string json = JsonConvert.SerializeObject(_products);
             System.IO.File.WriteAllText(path, json);
+            Log.Information("Calculate prices of products, finished");
             return _products;
         }
 

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Services;
 using Logic;
+using Serilog;
 
 namespace Practica2.Middlewares
 {
@@ -23,7 +24,9 @@ namespace Practica2.Middlewares
         {
             try
             {
+                Log.Information("Before NEXT, in Exception handler middleware.");
                 await _next(httpContext);
+                Log.Information("After NEXT, in Exception handler middleware.");
             }
             catch (Exception ex)
             {
@@ -53,6 +56,7 @@ namespace Practica2.Middlewares
             var response = new { Message = errorMessage, ErrorCode = errorCode };
             httpContext.Response.ContentType = "application/json";
             httpContext.Response.StatusCode = errorCode;
+            Log.Error("There was an error in the application: " + ex.Message);
             return httpContext.Response.WriteAsync(JsonConvert.SerializeObject(response));
         }
     }
