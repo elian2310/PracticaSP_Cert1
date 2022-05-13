@@ -136,7 +136,6 @@ namespace Logic.Managers
             if (indProduct < 0)
             {
                 res = indProduct;
-
                 throw new ProductNotFoundException("Product with that code doesn't exist");
             }
             else
